@@ -51,10 +51,10 @@
                     </a>
                     <ul class="collapse submenu list-unstyled" id="elements" data-parent="#accordionExample">
                         <li>
-                            <a href="#"> Hiển Thị Danh Mục </a>
+                            <router-link :to="{name:'IndexCat'}">Hiển Thị Danh Mục</router-link>
                         </li>
                         <li>
-                            <a href="#"> Thêm mới Danh Mục </a>
+                             <router-link :to="{name:'AddCat'}"> Thêm mới Danh Mục </router-link>
                         </li>
 
                     </ul>
@@ -144,7 +144,7 @@
                     </a>
                     <ul class="collapse submenu list-unstyled" id="users" data-parent="#accordionExample">
                         <li>
-                            <a href="#"> Hiển Thị Blog </a>
+                            <router-link :to="{name:'IndexBlog'}">Hiển Thị Blog</router-link>
                         </li>
                         <li>
                             <a href="#"> Thêm mới Blog </a>
