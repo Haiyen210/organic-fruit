@@ -1,16 +1,15 @@
 <template>
-
     <div class="statbox widget box box-shadow">
-        
+
         <div class="widget-header">
             <div class="row">
                 <div class="col-xl-12 col-md-12 col-sm-12 col-12">
-                    <h4>Sửa Category</h4>
+                    <h4>Sửa Danh Mục</h4>
                 </div>
             </div>
         </div>
         <div class="widget-content widget-content-area">
-            <form method="post" enctype='multipart/form-data' v-on:submit.prevent="onSubmitEditForm" v-if="category">
+            <form method="post" v-on:submit.prevent="onSubmitEditForm" v-if="categorys">
                 <input type="hidden" v-model="categorys.id">
                 <div class="form-group row mb-4">
                     <label for="exampleFormControlInput1" class="col-xl-2 col-sm-3 col-sm-2 col-form-label">Mã</label>
@@ -21,7 +20,7 @@
                 </div>
                 <div class="form-group row mb-4">
                     <label for="hPassword" class="col-xl-2 col-sm-3 col-sm-2 col-form-label">Tên
-                        category</label>
+                        Danh Mục</label>
                     <div class="col-xl-6 col-lg-6 col-sm-6">
                         <input type="text" class="form-control" id="name" placeholder="" v-model="categorys.name">
                     </div>
@@ -29,7 +28,8 @@
                 <div class="form-group row mb-4">
                     <label for="hPassword" class="col-xl-2 col-sm-3 col-sm-2 col-form-label">Mô tả</label>
                     <div class="col-xl-6 col-lg-6 col-sm-6">
-                        <input type="text" class="form-control" id="description" placeholder="" v-model="categorys.description">
+                         <textarea class="form-control mb-4" rows="3" id="description" v-model="categorys.description"
+                            ></textarea>
                     </div>
                 </div>
                 <fieldset class="form-group mb-4">
@@ -51,7 +51,6 @@
                         </div>
                     </div>
                 </fieldset>
-                
                 <div class="form-group row">
                     <div class="col-sm-10">
                         <button type="submit" class="btn btn-primary mt-3">Lưu</button>
@@ -60,7 +59,6 @@
             </form>
         </div>
     </div>
-
 </template>
 <script>
 import axios from "axios";
@@ -68,8 +66,8 @@ export default {
     props: ['category'],
     data() {
         return {
-            url: null,
             categorys: this.category,
+
         }
     },
     methods: {
@@ -78,9 +76,10 @@ export default {
                 .post("http://localhost:8080/Oganic_Fruit/rest/categoryService/updateCategory", this.categorys)
                 .then((res) => {
                     //Perform Success Action
-                    this.categorys = res.data;
-                    res.data.files;
+                    // this.categorys = res.data;
+                    // res.data.files;
                     console.log(res);
+
                 })
                 .catch((error) => {
                     // error.response.status Check status code
@@ -89,8 +88,9 @@ export default {
                 .finally(() => {
                     //Perform action in always
                 });
-             this.$emit("ShowEditData",this.categorys);
+            this.$emit("ShowEditData", this.categorys);
         },
+
     }
 
 }
