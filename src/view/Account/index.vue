@@ -1,13 +1,15 @@
 <template>
     <div class="main-container" id="container">
+
         <!--  BEGIN CONTENT AREA  -->
         <div id="content" class="main-content">
             <div class="layout-px-spacing">
 
                 <div class="row layout-top-spacing">
                     <div id="tableProgress" class="col-lg-12 col-12 layout-spacing">
+
                         <div class="statbox widget box box-shadow" v-if="isShowEdit == false && isShowAdd == false">
-                            <div class="row">
+                              <div class="row">
                                 <div class="col-12 col-sm-6 d-flex justify-content-sm-start justify-content-center">
                                     <a type="submit" class="btn btn-success mt-3" v-on:click.prevent="onAdd">Thêm
                                         Mới<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -33,7 +35,7 @@
                             <div class="widget-header">
                                 <div class="row">
                                     <div class="col-xl-12 col-md-12 col-sm-12 col-12">
-                                        <h4>Quản Lý Danh Mục</h4>
+                                        <h4>Quản Lý Người Dùng</h4>
                                     </div>
                                 </div>
                             </div>
@@ -44,21 +46,32 @@
                                             <tr>
                                                 <th class="text-center">Mã</th>
                                                 <th>Tên</th>
-                                                <th>Mô Tả</th>
-                                                <th>Trạng Thái</th>
+                                                <th>Email</th>
+                                                <th>Số điện thoại</th>
+                                                <th>Địa chỉ</th>
+                                                <th>Ngày sinh</th>
+                                                <th>Giới tính</th>
+                                                <th>Ảnh</th>
                                                 <th class="text-center">Hành Động</th>
                                             </tr>
                                         </thead>
                                         <tbody v-if="query">
-                                            <tr v-for="item in categoryFilte" :key="item.id">
+                                            <tr v-for="item in accountFilte" :key="item.id">
                                                 <td class="text-center">{{ item.code }}</td>
                                                 <td>{{ item.name }}</td>
-                                                <td>{{ item.description }}</td>
+                                                <td>{{ item.email }}</td>
+                                                <td>{{ item.phone }}</td>
+                                                <td>{{ item.address }}</td>
+                                                <td>{{ item.birthday }}</td>
                                                 <td>
                                                     <p class="text-danger">
-                                                        <span v-if="item.status">Hiển Thị</span>
-                                                        <span v-if="!item.status">Ẩn</span>
+                                                        <span v-if="item.gender">Nữ</span>
+                                                        <span v-if="!item.gender">Nam</span>
                                                     </p>
+                                                </td>
+                                                <td>
+                                                    <img :src="'http://localhost:8080/Oganic_Fruit/assets/' + item.images"
+                                                        alt="" style="width: 100px">
                                                 </td>
                                                 <td class="text-center">
                                                     <a href="javascript:void(0);" data-toggle="tooltip"
@@ -90,15 +103,22 @@
                                             </tr>
                                         </tbody>
                                         <tbody v-else>
-                                        <tr v-for="item in category" :key="item.id">
+                                        <tr v-for="item in account" :key="item.id">
                                                 <td class="text-center">{{ item.code }}</td>
                                                 <td>{{ item.name }}</td>
-                                                <td>{{ item.description }}</td>
+                                                <td>{{ item.email }}</td>
+                                                <td>{{ item.phone }}</td>
+                                                <td>{{ item.address }}</td>
+                                                <td>{{ item.birthday }}</td>
                                                 <td>
                                                     <p class="text-danger">
-                                                        <span v-if="item.status">Hiển Thị</span>
-                                                        <span v-if="!item.status">Ẩn</span>
+                                                        <span v-if="item.gender">Nữ</span>
+                                                        <span v-if="!item.gender">Nam</span>
                                                     </p>
+                                                </td>
+                                                <td>
+                                                    <img :src="'http://localhost:8080/Oganic_Fruit/assets/' + item.images"
+                                                        alt="" style="width: 100px">
                                                 </td>
                                                 <td class="text-center">
                                                     <a href="javascript:void(0);" data-toggle="tooltip"
@@ -140,8 +160,8 @@
                                 <path
                                     d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0zm3.5 7.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5z" />
                             </svg></a>
-                        <CategoryEdit :category="showEdit" v-if="isShowEdit == true" @ShowEditData="getEdit($event)" />
-                        <CategoryAdd v-if="isShowAdd == true" @ShowData="getData($event)" />
+                        <AccountEdit :account="showEdit" v-if="isShowEdit == true" @ShowEditData="getEdit($event)" />
+                        <AccountAdd v-if="isShowAdd == true" @ShowData="getData($event)" />
                     </div>
                 </div>
             </div>
@@ -151,30 +171,29 @@
 <style>
 </style>
 <script>
-import CategoryEdit from "../Category/edit.vue";
-import CategoryAdd from "../Category/add.vue";
-import CategoryService from "@/services/CategoryService";
+import AccountEdit from "../Account/edit.vue";
+import AccountAdd from "../Account/add.vue";
+import AccountService from "@/services/AccountService";
 export default {
     name: "Index",
     components: {
-        CategoryEdit,
-        CategoryAdd,
+        AccountAdd,
+        AccountEdit
     },
     data() {
         return {
-            category: null,
+            account: null,
             showEdit: null,
             isShowEdit: false,
             isShowAdd: false,
             query: "",
         }
     },
-   
-
-    mounted() {
-        CategoryService.getAll()
+    created() {
+        AccountService.getAll()
             .then((res) => {
-                this.category = res.data;
+                this.account = res.data;
+                console.log(res);
             })
             .catch((error) => {
                 console.log(error);
@@ -184,18 +203,18 @@ export default {
             })
 
     },
-computed: {
-        categoryFilte() {
+     computed: {
+        accountFilte() {
             if (this.query) {
-                return this.category.filter((category) => {
+                return this.account.filter((account) => {
                     return (
-                        category.name
+                        account.name
                             .toLowerCase()
                             .indexOf(this.query.toLowerCase()) != -1
                     )
                 })
             } else {
-                return this.category;
+                return this.account;
             }
 
         },
@@ -215,33 +234,32 @@ computed: {
             this.isShowAdd = true
         },
         getData(data) {
-            if (data) {
-                this.category.push(data);
-            }
+            this.account.push(data);
             console.log(data);
             this.isShowAdd = false;
+            this.$forceUpdate();
 
         },
         getEdit(data) {
-            for (let i = 0; i < this.category.length; i++) {
-                if (this.category[i].id == data.id) {
-                    this.category[i] = data;
+            for (let i = 0; i < this.account.length; i++) {
+                if (this.account[i].id == data.id) {
+                    this.account[i] = data;
+                    this.$forceUpdate();
                     break;
                 }
             }
 
-            console.log(this.category);
+            console.log(this.account);
             this.isShowEdit = false;
         },
         onDelete(item) {
-            if (confirm("Bạn có chắc muốn xóa danh mục số " + item.id)) {
+            if (confirm("Bạn có chắc muốn xóa sản phẩm số " + item.id)) {
                 console.log(item.id);
-                CategoryService.delete(item.id)
+
+                AccountService.delete(item.id)
                     .then(response => {
                         console.log(response);
-                        this.category
-                            .splice(this.category.findIndex(e => e.id == item.id), 1)
-                            .push(response.data);
+                        this.account.splice(this.account.findIndex(e => e.id == item.id), 1).push(response.data);
                     })
                     .catch(function (error) {
                         console.log(error)
@@ -249,5 +267,6 @@ computed: {
             }
         }
     }
+
 }
 </script>

@@ -13,7 +13,7 @@
                 <div class="form-group row mb-4">
                     <label for="exampleFormControlInput1" class="col-xl-2 col-sm-3 col-sm-2 col-form-label">Mã</label>
                     <div class="col-xl-6 col-lg-6 col-sm-6">
-                        <input type="text" class="form-control" id="code" placeholder="" v-model="blog.code"
+                        <input type="text" class="form-control" id="code" placeholder=""  v-model="blog.code"
                             :class="{ error: codeError.status, success: codeSuccess.status }" />
                         <p class="text-error" v-if="codeError.status">{{ codeError.text }}</p>
                         <p class="success-text" v-if="codeSuccess.status">{{ codeSuccess.text }}
@@ -48,29 +48,32 @@
                             Thái</label>
                         <div class="col-xl-10 col-lg-9 col-sm-10">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" v-model="blog.status" value="true"
+                                <input class="form-check-input" type="radio" :value="true" v-model="blog.status" 
                                     id="status" style="width: 16px;height: 16px;" />
                                 <label class="form-check-label" for="flexCheckDefault"> Hiển Thị
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" v-model="blog.status" value="false"
+                                <input class="form-check-input" type="radio" :value="false" v-model="blog.status" 
                                     id="status" style="width: 16px;height: 16px;" checked />
                                 <label class="form-check-label" for="flexCheckChecked"> Ẩn </label>
                             </div>
                         </div>
                     </div>
                 </fieldset>
-                <div class="form-group row mb-4">
-                    <label for="hPassword" class="col-xl-2 col-sm-3 col-sm-2 col-form-label">
-                        Ảnh</label>
-                    <div class="col-xl-10 col-lg-9 col-sm-10">
-                        <input type="file" class="custom-file-container__custom-file__custom-file-input" ref="images"
-                            name="images" id="images" @change="handleFileUpload()">
-
+               <div class="form-group row mb-4">
+                    <div class="col-4">
+                        <p class="btn btn-success btn-sm" @click="$refs.file.click()">
+                            Chọn file
+                        </p>
+                    </div>
+                    <div class="col-8">
+                        <label class="btn btn-default p-0">
+                            <input type="file" accept="image/*" ref="file" @change="selectImage" :hidden="true" />
+                        </label>
                     </div>
                     <div class="col-xl-10 col-lg-9 col-sm-10">
-                        <img v-if="url" :src="url" style="width: 600px;height: 500px;margin-left: 20%;" />
+                        <img v-if="url" :src="url" style="width: 600px; height: 500px; margin-left: 20%" />
                     </div>
                 </div>
                 <div class="form-group row">
@@ -84,10 +87,14 @@
 
 </template>
 <script>
-import axios from "axios";
+import BlogService from "../../services/BlogService";
+import UploadService from "../../services/UploadService";
+
 export default {
     data() {
         return {
+             message: "",
+            currentImage: undefined,
             url: null,
             ID: null,
             blog: {
@@ -187,13 +194,13 @@ export default {
 
             if (this.blog.description.length == 0) {
                 this.descriptionError = {
-                    text: "Tên không được để trống",
+                    text: "Mô tả không được để trống",
                     status: true
                 }
 
             } else if (this.blog.description.length < 6) {
                 this.descriptionError = {
-                    text: "Tên phải từ 6 kí tự đổ lên",
+                    text: "Mô tả phải từ 6 kí tự đổ lên",
                     status: true
                 }
 
@@ -215,27 +222,24 @@ export default {
             }
 
             if (this.codeSuccess.status == true && this.nameSuccess.status == true && this.descriptionSuccess.status == true) {
-                let formData = new FormData();
-                formData.append('images', this.$refs.images.files[0]);
-                axios
-                    .post("http://localhost:8080/Oganic_Fruit/rest/blogService/insertBlog", this.blog, this.blog.images, {
-                        headers: {
-                            "Content-Type": "multipart/form-data"
-                        }
+                UploadService.upload(this.currentImage)
+                    .then((response) => {
+                        console.log();
+                        this.message = response.data.message;
                     })
+                    .catch((err) => {
+                        this.message = "Không thể tải ảnh ! " + err;
+                        this.currentImage = undefined;
+                    });
+
+                BlogService.create(this.blog)
                     .then((res) => {
                         //Perform Success Action
-                        this.ID = res.data;
+                        this.ID = res.data.id;
                         this.blog.id = this.ID;
                         console.log(this.blog.id);
+                        console.log(res.data);
                         res.data.files;
-                        axios
-                            .post("http://localhost:8080/Oganic_Fruit/rest/uploadService/upload", formData, {
-                                headers: {
-                                    "Content-Type": "multipart/form-data"
-                                }
-                            })
-
                     })
                     .catch((error) => {
                         // error.response.status Check status code
@@ -249,11 +253,11 @@ export default {
             }
 
         },
-        handleFileUpload() {
-            this.blog.images = this.$refs.images.files[0].name;
-            this.url = URL.createObjectURL(this.$refs.images.files[0]);
-            console.log(this.blog.images);
-        }
+        selectImage() {
+            this.currentImage = this.$refs.file.files.item(0);
+            this.url = URL.createObjectURL(this.currentImage);
+            this.blog.images = this.$refs.file.files.item(0).name;
+        },
     }
 
 }

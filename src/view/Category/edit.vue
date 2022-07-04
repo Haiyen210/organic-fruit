@@ -38,13 +38,13 @@
                             Thái</label>
                         <div class="col-xl-10 col-lg-9 col-sm-10">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" v-model="categorys.status" value="true"
+                                <input class="form-check-input" type="radio" v-model="categorys.status" :value="true" :checked="categorys.status === true"
                                     id="status" style="width: 16px;height: 16px;" />
                                 <label class="form-check-label" for="flexCheckDefault"> Hiển Thị
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" v-model="categorys.status" value="false"
+                                <input class="form-check-input" type="radio" v-model="categorys.status" :value="false" :checked="categorys.status === false || categorys.status === '' "
                                     id="status" style="width: 16px;height: 16px;" />
                                 <label class="form-check-label" for="flexCheckChecked"> Ẩn </label>
                             </div>
@@ -61,7 +61,8 @@
     </div>
 </template>
 <script>
-import axios from "axios";
+import CategoryService from '@/services/CategoryService';
+
 export default {
     props: ['category'],
     data() {
@@ -72,8 +73,7 @@ export default {
     },
     methods: {
         onSubmitEditForm() {
-            axios
-                .post("http://localhost:8080/Oganic_Fruit/rest/categoryService/updateCategory", this.categorys)
+            CategoryService.update(this.categorys)
                 .then((res) => {
                     //Perform Success Action
                     // this.categorys = res.data;

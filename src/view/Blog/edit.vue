@@ -39,13 +39,13 @@
                             Thái</label>
                         <div class="col-xl-10 col-lg-9 col-sm-10">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" v-model="blogs.status" value="true"
+                                <input class="form-check-input" type="radio" v-model="blogs.status" :value="true" :checked="blogs.status === true"
                                     id="status" style="width: 16px;height: 16px;" />
                                 <label class="form-check-label" for="flexCheckDefault"> Hiển Thị
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" v-model="blogs.status" value="false"
+                                <input class="form-check-input" type="radio" v-model="blogs.status" :value="false" :checked="blogs.status === false || blogs.status === '' "
                                     id="status" style="width: 16px;height: 16px;" />
                                 <label class="form-check-label" for="flexCheckChecked"> Ẩn </label>
                             </div>
@@ -79,36 +79,38 @@
 
 </template>
 <script>
-import axios from "axios";
+import BlogService from "../../services/BlogService";
+import UploadService from "../../services/UploadService";
 export default {
     props: ['blog'],
     data() {
         return {
+            message: "",
+            currentImage: undefined,
             url: null,
             blogs: this.blog,
-            ishowImage: false
+            ishowImage: false,
+            old: "localhost:8080/uploads/" + this.blog.images,
 
         }
     },
     methods: {
         onSubmitEditForm() {
-            let formData = new FormData();
-            formData.append('images', this.$refs.images.files[0]);
-            axios
-                .post("http://localhost:8080/Oganic_Fruit/rest/blogService/updateBlog", this.blogs, this.blogs.images)
+           UploadService.upload(this.currentImage)
+                .then((response) => {
+                    console.log();
+                    this.message = response.data.message;
+                })
+                .catch((err) => {
+                    this.message = "Không thể tải ảnh ! " + err;
+                    this.currentImage = undefined;
+                });
+            BlogService.update(this.blogs)
                 .then((res) => {
                     //Perform Success Action
                     this.blogs = res.data;
                     res.data.files;
                     console.log(res);
-                    if (this.blogs.images == "") {
-                        axios
-                            .post("http://localhost:8080/Oganic_Fruit/rest/uploadService/upload", formData, {
-                                headers: {
-                                    "Content-Type": "multipart/form-data"
-                                }
-                            })
-                    }
                 })
                 .catch((error) => {
                     // error.response.status Check status code
@@ -119,11 +121,12 @@ export default {
                 });
             this.$emit("ShowEditData", this.blogs);
         },
-        handleFileUpload() {
-            this.blogs.images = this.$refs.images.files[0].name;
-            this.url = URL.createObjectURL(this.$refs.images.files[0]);
+        selectImage() {
+            this.currentImage = this.$refs.file.files.item(0);
+            this.url = URL.createObjectURL(this.currentImage);
+            this.banners.images = this.$refs.file.files.item(0).name;
             this.ishowImage = true;
-        }
+        },
     }
 
 }

@@ -3,6 +3,7 @@ import IndexBanner from "./view/Banner/index";
 import IndexCategory from "./view/Category/index";
 import IndexProduct from "./view/Product/index";
 import IndexBlog from "./view/Blog/index";
+import IndexAccount from "./view/Account/index";
 import Home from "./view/home";
 const routes = [{
         path: "/",
@@ -40,6 +41,11 @@ const routes = [{
         path: "/blog",
         name: "IndexBlog",
         component: IndexBlog,
+    },
+    {
+        path: "/account",
+        name: "IndexAccount",
+        component: IndexAccount,
     },
 ];
 const router = createRouter({

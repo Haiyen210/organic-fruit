@@ -49,13 +49,13 @@
                             Thái</label>
                         <div class="col-xl-10 col-lg-9 col-sm-10">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" v-model="category.status" value="true"
+                                <input class="form-check-input" type="radio" v-model="category.status" :value="true"
                                     id="status" style="width: 16px;height: 16px;" />
                                 <label class="form-check-label" for="flexCheckDefault"> Hiển Thị
                                 </label>
                             </div>
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" v-model="category.status" value="false"
+                                <input class="form-check-input" type="radio" v-model="category.status" :value="false"
                                     id="status" style="width: 16px;height: 16px;" checked />
                                 <label class="form-check-label" for="flexCheckChecked"> Ẩn </label>
                             </div>
@@ -74,7 +74,7 @@
 
 </template>
 <script>
-import axios from "axios";
+import CategoryService from "@/services/CategoryService";
 export default {
 
     data() {
@@ -178,13 +178,13 @@ export default {
 
             if (this.category.description.length == 0) {
                 this.descriptionError = {
-                    text: "Tên không được để trống",
+                    text: "Mô tả không được để trống",
                     status: true
                 }
 
             } else if (this.category.description.length < 6) {
                 this.descriptionError = {
-                    text: "Tên phải từ 6 kí tự đổ lên",
+                    text: "Mô tả phải từ 6 kí tự đổ lên",
                     status: true
                 }
 
@@ -206,11 +206,10 @@ export default {
             }
 
             if (this.codeSuccess.status == true && this.nameSuccess.status == true && this.descriptionSuccess.status == true) {
-                axios
-                    .post("http://localhost:8080/Oganic_Fruit/rest/categoryService/insertCategory", this.category)
+                CategoryService.create(this.category)
                     .then((res) => {
                         //Perform Success Action
-                        this.ID = res.data;
+                        this.ID = res.data.id;
                         this.category.id = this.ID;
                         console.log(this.category.id);
                     })
